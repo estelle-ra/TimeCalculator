@@ -1,10 +1,150 @@
+const languageStorageKey = "crew-time-board-language";
+const supportedLanguages = ["ko", "en"];
+let currentLang = supportedLanguages.includes(localStorage.getItem(languageStorageKey))
+  ? localStorage.getItem(languageStorageKey)
+  : "ko";
+
+const messages = {
+  ko: {
+    appTitle: "협업 시차 계산기",
+    description: "서울, 뉴욕, LA 크루가 함께 회의 시간을 맞추는 협업 시차 계산기",
+    eyebrow: "Collaboration Time Calculator",
+    language: "언어",
+    now: "NOW",
+    currentTime: "현재 시간",
+    meetingSettings: "회의 기준 시간 설정",
+    base: "기준",
+    meetingStart: "회의 시작",
+    current: "현재",
+    baseRegion: "기준 지역",
+    date: "날짜",
+    time: "시간",
+    moveWithinDay: "하루 안에서 이동",
+    meetingTimeAdjust: "회의 시작 시간 조정",
+    minus15Title: "15분 전",
+    plus15Title: "15분 후",
+    meetingLength: "회의 길이",
+    participants: "참여 지역",
+    editWorkHours: "업무시간 수정",
+    workHoursDefaultHint: "기본값 10:00-19:00 · 타협 ±2시간",
+    regionalWorkHours: "지역별 업무 기준",
+    weekendHolidayExcluded: "주말과 공휴일은 업무시간에서 제외",
+    defaultValue: "기본값",
+    meetingSummary: "회의 요약",
+    judgment: "판정",
+    calculating: "계산 중",
+    shareTextLabel: "공유 문구",
+    copy: "복사",
+    copied: "복사됨",
+    selectedText: "선택됨",
+    timeByRegion: "지역별 시간",
+    localTime: "현지 시간",
+    workApplied: "업무 기준 적용",
+    recommendedMeetingTimes: "추천 회의 시간",
+    recommendation: "추천",
+    sameDayCandidates: "같은 날짜 후보",
+    thirtyMinuteInterval: "30분 간격",
+    flagSuffix: "국기",
+    start: "시작",
+    end: "종료",
+    invalidWorkRange: "종료는 시작 이후여야 해요",
+    baseDay: "기준일",
+    nextDay: "다음날",
+    previousDay: "전날",
+    daySuffix: "일",
+    weekend: "주말",
+    holiday: "공휴일",
+    workingHours: "업무시간",
+    negotiable: "타협 가능",
+    offHours: "비업무",
+    notParticipating: "미참여",
+    scoreGood: "좋음",
+    scoreWarn: "타협 가능",
+    scoreBad: "어려움",
+    scoreTitleGood: "팀 적합도 좋음",
+    scoreTitleWarn: "팀 적합도 보통",
+    scoreTitleBad: "팀 적합도 낮음",
+    hour: "시간",
+    minute: "분",
+    workHintPrefix: "업무 기준",
+    compromiseShort: "타협 ±2h",
+  },
+  en: {
+    appTitle: "Collaboration Time Calculator",
+    description: "A collaboration time calculator for coordinating meetings across Seoul, New York, LA, and Amsterdam.",
+    eyebrow: "Collaboration Time Calculator",
+    language: "Language",
+    now: "NOW",
+    currentTime: "Current time",
+    meetingSettings: "Meeting time settings",
+    base: "Base",
+    meetingStart: "Meeting start",
+    current: "Now",
+    baseRegion: "Base region",
+    date: "Date",
+    time: "Time",
+    moveWithinDay: "Move within day",
+    meetingTimeAdjust: "Adjust meeting start time",
+    minus15Title: "15 minutes earlier",
+    plus15Title: "15 minutes later",
+    meetingLength: "Meeting length",
+    participants: "Participants",
+    editWorkHours: "Edit working hours",
+    workHoursDefaultHint: "Default 10:00-19:00 · compromise ±2h",
+    regionalWorkHours: "Working hours by region",
+    weekendHolidayExcluded: "Weekends and holidays are excluded",
+    defaultValue: "Default",
+    meetingSummary: "Meeting summary",
+    judgment: "Fit",
+    calculating: "Calculating",
+    shareTextLabel: "Share text",
+    copy: "Copy",
+    copied: "Copied",
+    selectedText: "Selected",
+    timeByRegion: "Time by region",
+    localTime: "Local time",
+    workApplied: "Working hours applied",
+    recommendedMeetingTimes: "Recommended meeting times",
+    recommendation: "Recommendations",
+    sameDayCandidates: "Same-day candidates",
+    thirtyMinuteInterval: "30-min intervals",
+    flagSuffix: "flag",
+    start: "Start",
+    end: "End",
+    invalidWorkRange: "End must be later than start",
+    baseDay: "base day",
+    nextDay: "next day",
+    previousDay: "previous day",
+    daySuffix: "d",
+    weekend: "Weekend",
+    holiday: "Holiday",
+    workingHours: "Working hours",
+    negotiable: "Negotiable",
+    offHours: "Off hours",
+    notParticipating: "Not participating",
+    scoreGood: "Good",
+    scoreWarn: "Negotiable",
+    scoreBad: "Difficult",
+    scoreTitleGood: "Good team fit",
+    scoreTitleWarn: "Moderate team fit",
+    scoreTitleBad: "Low team fit",
+    hour: "h",
+    minute: "m",
+    workHintPrefix: "Work hours",
+    compromiseShort: "compromise ±2h",
+  },
+};
+
 const zones = [
   {
     id: "Asia/Seoul",
     label: "서울",
+    labels: { ko: "서울", en: "Seoul" },
     region: "한국",
+    regions: { ko: "한국", en: "Korea" },
     flag: "🇰🇷",
     flagLabel: "대한민국",
+    flagLabels: { ko: "대한민국", en: "South Korea" },
     holidayCalendar: "KR",
     accent: "#1d4ed8",
     defaultWorkStart: 10 * 60,
@@ -16,9 +156,12 @@ const zones = [
   {
     id: "America/New_York",
     label: "뉴욕",
+    labels: { ko: "뉴욕", en: "New York" },
     region: "미국 동부",
+    regions: { ko: "미국 동부", en: "U.S. East" },
     flag: "🇺🇸",
     flagLabel: "미국",
+    flagLabels: { ko: "미국", en: "United States" },
     holidayCalendar: "US",
     accent: "#168a50",
     defaultWorkStart: 10 * 60,
@@ -30,9 +173,12 @@ const zones = [
   {
     id: "America/Los_Angeles",
     label: "LA",
+    labels: { ko: "LA", en: "LA" },
     region: "미국 서부",
+    regions: { ko: "미국 서부", en: "U.S. West" },
     flag: "🇺🇸",
     flagLabel: "미국",
+    flagLabels: { ko: "미국", en: "United States" },
     holidayCalendar: "US",
     accent: "#c0265a",
     defaultWorkStart: 10 * 60,
@@ -44,8 +190,11 @@ const zones = [
   {
     id: "Europe/Amsterdam",
     label: "암스테르담",
+    labels: { ko: "암스테르담", en: "Amsterdam" },
     region: "네덜란드",
+    regions: { ko: "네덜란드", en: "Netherlands" },
     flagLabel: "네덜란드",
+    flagLabels: { ko: "네덜란드", en: "Netherlands" },
     holidayCalendar: "NL",
     accent: "#d97706",
     defaultWorkStart: 10 * 60,
@@ -63,9 +212,18 @@ let holidayCalendars = {};
 const flagSvgs = {
   KR: `
     <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="kr-taegeuk-clip">
+          <circle cx="18" cy="12" r="5.2" />
+        </clipPath>
+      </defs>
       <rect width="36" height="24" rx="2" fill="#fff" />
       <circle cx="18" cy="12" r="5.2" fill="#cd2e3a" />
-      <path d="M12.8 13.6c1.25-3.4 4.15-3.4 5.2-1.6 1.05 1.8 3.95 1.8 5.2-1.6a5.2 5.2 0 0 1-10.4 3.2Z" fill="#0047a0" />
+      <path
+        clip-path="url(#kr-taegeuk-clip)"
+        d="M12.8 13.6C14.05 10.2 16.95 10.2 18 12c1.05 1.8 3.95 1.8 5.2-1.6v6.8H12.8Z"
+        fill="#0047a0"
+      />
       <g fill="#111">
         <g transform="translate(9.2 6.2) rotate(-33)">
           <rect x="-3.6" y="-2.45" width="7.2" height="0.9" rx="0.12" />
@@ -132,6 +290,7 @@ const els = {
   nowButton: document.querySelector("#nowButton"),
   minus15: document.querySelector("#minus15"),
   plus15: document.querySelector("#plus15"),
+  boardTitle: document.querySelector("#boardTitle"),
   zoneList: document.querySelector("#zoneList"),
   participants: document.querySelector("#participants"),
   workHours: document.querySelector("#workHours"),
@@ -144,9 +303,41 @@ const els = {
   shareInput: document.querySelector("#shareInput"),
   copyButton: document.querySelector("#copyButton"),
   suggestions: document.querySelector("#suggestions"),
+  langButtons: document.querySelectorAll("[data-lang-option]"),
 };
 
 const dateTimeFormatters = new Map();
+
+function t(key) {
+  return messages[currentLang]?.[key] ?? messages.ko[key] ?? key;
+}
+
+function applyZoneLanguage() {
+  for (const zone of zones) {
+    zone.label = zone.labels[currentLang] ?? zone.labels.ko;
+    zone.region = zone.regions[currentLang] ?? zone.regions.ko;
+    zone.flagLabel = zone.flagLabels[currentLang] ?? zone.flagLabels.ko;
+  }
+}
+
+function dateLocale() {
+  return currentLang === "en" ? "en-US" : "ko-KR";
+}
+
+function durationText(minutes) {
+  if (currentLang === "en") {
+    if (minutes >= 60 && minutes % 60 === 0) return `${minutes / 60}${t("hour")}`;
+    if (minutes > 60 && minutes % 60 !== 0) {
+      return `${Math.floor(minutes / 60)}${t("hour")} ${minutes % 60}${t("minute")}`;
+    }
+    return `${minutes}${t("minute")}`;
+  }
+  if (minutes >= 60 && minutes % 60 === 0) return `${minutes / 60}${t("hour")}`;
+  if (minutes > 60 && minutes % 60 !== 0) {
+    return `${Math.floor(minutes / 60)}${t("hour")} ${minutes % 60}${t("minute")}`;
+  }
+  return `${minutes}${t("minute")}`;
+}
 
 function formatter(timeZone, options, locale = "ko-KR") {
   const key = `${locale}:${timeZone}:${JSON.stringify(options)}`;
@@ -191,16 +382,7 @@ function timeInputFor(date, timeZone) {
   return `${pad(parts.hour)}:${pad(parts.minute)}`;
 }
 
-function zoneAbbr(date, timeZone) {
-  const parts = formatter(
-    timeZone,
-    { timeZoneName: "short", hour: "2-digit", hourCycle: "h23" },
-    "en-US",
-  ).formatToParts(date);
-  return parts.find((part) => part.type === "timeZoneName")?.value ?? "";
-}
-
-function utcOffsetLabel(date, timeZone) {
+function offsetMinutesFor(date, timeZone) {
   const parts = partsFor(date, timeZone);
   const localAsUtc = Date.UTC(
     parts.year,
@@ -210,7 +392,31 @@ function utcOffsetLabel(date, timeZone) {
     parts.minute,
     parts.second,
   );
-  const offsetMinutes = Math.round((localAsUtc - date.getTime()) / 60000);
+  return Math.round((localAsUtc - date.getTime()) / 60000);
+}
+
+function zoneAbbr(date, timeZone) {
+  const offsetMinutes = offsetMinutesFor(date, timeZone);
+  const knownAbbreviations = {
+    "Asia/Seoul": { 540: "KST" },
+    "America/New_York": { "-300": "EST", "-240": "EDT" },
+    "America/Los_Angeles": { "-480": "PST", "-420": "PDT" },
+    "Europe/Amsterdam": { 60: "CET", 120: "CEST" },
+  };
+
+  const known = knownAbbreviations[timeZone]?.[String(offsetMinutes)];
+  if (known) return known;
+
+  const parts = formatter(
+    timeZone,
+    { timeZoneName: "short", hour: "2-digit", hourCycle: "h23" },
+    "en-US",
+  ).formatToParts(date);
+  return parts.find((part) => part.type === "timeZoneName")?.value ?? "";
+}
+
+function utcOffsetLabel(date, timeZone) {
+  const offsetMinutes = offsetMinutesFor(date, timeZone);
   const sign = offsetMinutes >= 0 ? "+" : "-";
   const absolute = Math.abs(offsetMinutes);
   const hours = Math.floor(absolute / 60);
@@ -236,7 +442,11 @@ function minutesToTime(minutes) {
 }
 
 function timeToMinutes(time) {
+  if (!/^\d{1,2}:\d{2}$/.test(time)) return 0;
   const [hour, minute] = time.split(":").map(Number);
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return 0;
+  if (hour < 0 || hour > 24 || minute < 0 || minute > 59) return 0;
+  if (hour === 24 && minute !== 0) return 0;
   return hour * 60 + minute;
 }
 
@@ -245,7 +455,7 @@ function workHoursLabel(zone) {
 }
 
 function flagName(zone) {
-  return `<span class="flag-label"><span class="flag" role="img" aria-label="${zone.flagLabel} 국기">${flagSvgs[zone.holidayCalendar]}</span><span>${zone.label}</span></span>`;
+  return `<span class="flag-label"><span class="flag" role="img" aria-label="${zone.flagLabel} ${t("flagSuffix")}">${flagSvgs[zone.holidayCalendar]}</span><span>${zone.label}</span></span>`;
 }
 
 function textFlagName(zone) {
@@ -271,6 +481,59 @@ function syncParticipantInputs() {
     );
     if (input) input.checked = zone.selected;
   }
+}
+
+function syncBaseZoneOptions() {
+  const selectedValue = els.baseZone.value || "Asia/Seoul";
+  els.baseZone.innerHTML = "";
+
+  for (const zone of zones) {
+    const option = document.createElement("option");
+    option.value = zone.id;
+    option.textContent = `${textFlagName(zone)} (${zone.region})`;
+    els.baseZone.append(option);
+  }
+
+  els.baseZone.value = selectedValue;
+}
+
+function syncDurationOptions() {
+  for (const option of els.duration.querySelectorAll("[data-duration-label]")) {
+    option.textContent = durationText(Number(option.value));
+  }
+}
+
+function applyStaticText() {
+  document.documentElement.lang = currentLang;
+  document.title = t("appTitle");
+  document.querySelector('meta[name="description"]')?.setAttribute("content", t("description"));
+
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-title]")) {
+    element.setAttribute("title", t(element.dataset.i18nTitle));
+  }
+  for (const element of document.querySelectorAll("[data-i18n-aria]")) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAria));
+  }
+
+  for (const button of els.langButtons) {
+    button.classList.toggle("is-active", button.dataset.langOption === currentLang);
+    button.setAttribute("aria-pressed", String(button.dataset.langOption === currentLang));
+  }
+}
+
+function applyLanguage(lang, shouldRender = true) {
+  currentLang = supportedLanguages.includes(lang) ? lang : "ko";
+  localStorage.setItem(languageStorageKey, currentLang);
+  applyZoneLanguage();
+  applyStaticText();
+  syncBaseZoneOptions();
+  syncDurationOptions();
+  buildParticipantControls();
+  buildWorkHourControls();
+  if (shouldRender) render();
 }
 
 function buildParticipantControls() {
@@ -406,14 +669,14 @@ function buildWorkHourControls() {
         <strong>${flagName(zone)}</strong>
       </div>
       <label>
-        <span>시작</span>
-        <input data-zone-id="${zone.id}" data-work-edge="start" type="time" step="900" />
+        <span>${t("start")}</span>
+        <input data-zone-id="${zone.id}" data-work-edge="start" type="text" inputmode="numeric" pattern="[0-9]{2}:[0-9]{2}" placeholder="HH:MM" />
       </label>
       <label>
-        <span>종료</span>
-        <input data-zone-id="${zone.id}" data-work-edge="end" type="time" step="900" />
+        <span>${t("end")}</span>
+        <input data-zone-id="${zone.id}" data-work-edge="end" type="text" inputmode="numeric" pattern="[0-9]{2}:[0-9]{2}" placeholder="HH:MM" />
       </label>
-      <small>종료는 시작 이후여야 해요</small>
+      <small>${t("invalidWorkRange")}</small>
     `;
 
     const startInput = row.querySelector('[data-work-edge="start"]');
@@ -490,7 +753,7 @@ function formatDate(date, timeZone) {
     month: "short",
     day: "numeric",
     weekday: "short",
-  }).format(date);
+  }, dateLocale()).format(date);
 }
 
 function localMinutes(date, timeZone) {
@@ -514,14 +777,20 @@ function holidayFor(date, zone) {
   return calendar[dateInputFor(date, zone.id)] ?? null;
 }
 
+function holidayLabel(holiday) {
+  return currentLang === "en" && /[가-힣]/.test(holiday) ? t("holiday") : holiday;
+}
+
 function dayRelation(date, timeZone, baseDateValue) {
   const [year, month, day] = baseDateValue.split("-").map(Number);
   const baseKey = Date.UTC(year, month - 1, day);
   const diff = Math.round((localDayKey(date, timeZone) - baseKey) / 86400000);
-  if (diff === 0) return "기준일";
-  if (diff === 1) return "다음날";
-  if (diff === -1) return "전날";
-  return diff > 0 ? `+${diff}일` : `${diff}일`;
+  if (diff === 0) return t("baseDay");
+  if (diff === 1) return t("nextDay");
+  if (diff === -1) return t("previousDay");
+  return currentLang === "en"
+    ? `${diff > 0 ? "+" : ""}${diff}${t("daySuffix")}`
+    : diff > 0 ? `+${diff}${t("daySuffix")}` : `${diff}${t("daySuffix")}`;
 }
 
 function compactDayTag(date, timeZone, baseDateValue) {
@@ -529,7 +798,9 @@ function compactDayTag(date, timeZone, baseDateValue) {
   const baseKey = Date.UTC(year, month - 1, day);
   const diff = Math.round((localDayKey(date, timeZone) - baseKey) / 86400000);
   if (diff === 0) return "";
-  return diff > 0 ? `(+${diff}일)` : `(${diff}일)`;
+  return currentLang === "en"
+    ? `(${diff > 0 ? "+" : ""}${diff}${t("daySuffix")})`
+    : diff > 0 ? `(+${diff}${t("daySuffix")})` : `(${diff}${t("daySuffix")})`;
 }
 
 function rangeStatus(startMinute, duration, zone, instant) {
@@ -537,10 +808,10 @@ function rangeStatus(startMinute, duration, zone, instant) {
   const crossesMidnight = endMinute > 1440;
   const holiday = holidayFor(instant, zone);
   if (holiday) {
-    return { key: "off", label: holiday, score: 0 };
+    return { key: "off", label: holidayLabel(holiday), score: 0 };
   }
   if (isWeekend(instant, zone.id)) {
-    return { key: "off", label: "주말", score: 0 };
+    return { key: "off", label: t("weekend"), score: 0 };
   }
   const inFocus =
     !crossesMidnight &&
@@ -552,12 +823,12 @@ function rangeStatus(startMinute, duration, zone, instant) {
     !crossesMidnight && startMinute >= compromiseStart && endMinute <= compromiseEnd;
 
   if (inFocus) {
-    return { key: "focus", label: "업무시간", score: 2 };
+    return { key: "focus", label: t("workingHours"), score: 2 };
   }
   if (inEdge) {
-    return { key: "edge", label: "타협 가능", score: 1 };
+    return { key: "edge", label: t("negotiable"), score: 1 };
   }
-  return { key: "off", label: "비업무", score: 0 };
+  return { key: "off", label: t("offHours"), score: 0 };
 }
 
 function renderTimeline(timeline, startMinute, duration, zone) {
@@ -584,7 +855,7 @@ function buildZoneRow(zone, instant, endInstant, duration, baseDateValue) {
   const startMinute = localMinutes(instant, zone.id);
   const status = zone.selected
     ? rangeStatus(startMinute, duration, zone, instant)
-    : { key: "excluded", label: "미참여", score: 0 };
+    : { key: "excluded", label: t("notParticipating"), score: 0 };
   const row = document.createElement("article");
   row.className = `zone-row ${zone.id === els.baseZone.value ? "is-base" : ""} ${
     zone.selected ? "" : "is-excluded"
@@ -626,11 +897,11 @@ function buildZoneRow(zone, instant, endInstant, duration, baseDateValue) {
 function scoreSummary(score, maxScore, statuses = []) {
   const hasUnavailable = statuses.some((status) => status.score === 0);
   const ratio = maxScore > 0 ? score / maxScore : 0;
-  if (!hasUnavailable && ratio >= 0.8) return { label: "좋음", className: "good", title: "팀 적합도 좋음" };
+  if (!hasUnavailable && ratio >= 0.8) return { label: t("scoreGood"), className: "good", title: t("scoreTitleGood") };
   if (!hasUnavailable && ratio >= 0.5) {
-    return { label: "타협 가능", className: "warn", title: "팀 적합도 보통" };
+    return { label: t("scoreWarn"), className: "warn", title: t("scoreTitleWarn") };
   }
-  return { label: "어려움", className: "bad", title: "팀 적합도 낮음" };
+  return { label: t("scoreBad"), className: "bad", title: t("scoreTitleBad") };
 }
 
 function renderLiveClocks() {
@@ -742,7 +1013,8 @@ function render() {
   const maxScore = selected.length * 2;
 
   els.sliderLabel.textContent = baseTimeValue;
-  els.workHint.innerHTML = `업무 기준(타협 ±2h): ${selected
+  els.boardTitle.textContent = selected.map((zone) => zone.label).join(" · ");
+  els.workHint.innerHTML = `${t("workHintPrefix")} (${t("compromiseShort")}): ${selected
     .map((zone) => `${flagName(zone)} ${hourLabel(zone.workStart)}-${hourLabel(zone.workEnd)}`)
     .join(" · ")}`;
   els.zoneList.innerHTML = "";
@@ -779,10 +1051,7 @@ function render() {
   els.scorePill.className = `score-pill ${summary.className}`;
   els.scoreMeter.style.width = `${Math.round((score / maxScore) * 100)}%`;
 
-  const durationLabel =
-    duration >= 60 && duration % 60 === 0
-      ? `${duration / 60}시간`
-      : `${duration}분`;
+  const durationLabel = durationText(duration);
   const share = `${formatDate(instant, baseZone)} ${displayPieces.join(" / ")} · ${durationLabel}`;
   els.shareText.textContent = share;
   els.shareInput.value = share;
@@ -806,13 +1075,10 @@ function setNowInBaseZone() {
 }
 
 async function init() {
-  for (const zone of zones) {
-    const option = document.createElement("option");
-    option.value = zone.id;
-    option.textContent = `${textFlagName(zone)} (${zone.region})`;
-    els.baseZone.append(option);
-  }
-
+  applyZoneLanguage();
+  applyStaticText();
+  syncBaseZoneOptions();
+  syncDurationOptions();
   els.baseZone.value = "Asia/Seoul";
   await loadHolidays();
   loadWorkHours();
@@ -836,16 +1102,19 @@ async function init() {
   els.resetWorkHours.addEventListener("click", resetWorkHours);
   els.minus15.addEventListener("click", () => addMinutesToInput(-15));
   els.plus15.addEventListener("click", () => addMinutesToInput(15));
+  for (const button of els.langButtons) {
+    button.addEventListener("click", () => applyLanguage(button.dataset.langOption));
+  }
   els.copyButton.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(els.shareInput.value);
-      els.copyButton.textContent = "복사됨";
+      els.copyButton.textContent = t("copied");
     } catch {
       els.shareInput.select();
-      els.copyButton.textContent = "선택됨";
+      els.copyButton.textContent = t("selectedText");
     }
     window.setTimeout(() => {
-      els.copyButton.textContent = "복사";
+      els.copyButton.textContent = t("copy");
     }, 1400);
   });
 }

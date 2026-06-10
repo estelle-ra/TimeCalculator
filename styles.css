@@ -98,6 +98,45 @@ h1 {
   letter-spacing: 0;
 }
 
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 4px;
+  border: 1px solid rgba(203, 213, 223, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.language-switch span {
+  padding: 0 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.lang-button {
+  min-width: 42px;
+  min-height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.lang-button.is-active {
+  background: var(--ink);
+  color: #fff;
+}
+
+.lang-button:focus-visible {
+  outline: 3px solid rgba(29, 78, 216, 0.2);
+  outline-offset: 2px;
+}
+
 h2 {
   margin-bottom: 0;
   font-size: 1.12rem;
@@ -512,7 +551,9 @@ input[type="range"] {
 .hint {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   min-height: 28px;
+  max-width: 100%;
   border-radius: 999px;
   padding: 0 10px;
   color: var(--muted);
@@ -795,7 +836,8 @@ input[type="range"] {
 
 @media (max-width: 560px) {
   .app-shell {
-    width: min(100% - 20px, 1180px);
+    width: calc(100% - 20px);
+    max-width: 1180px;
     padding-top: 10px;
   }
 
