@@ -41,6 +41,20 @@ const zones = [
     workEnd: 19 * 60,
     selected: true,
   },
+  {
+    id: "Europe/Amsterdam",
+    label: "암스테르담",
+    region: "네덜란드",
+    flagLabel: "네덜란드",
+    holidayCalendar: "NL",
+    accent: "#d97706",
+    defaultWorkStart: 10 * 60,
+    defaultWorkEnd: 19 * 60,
+    workStart: 10 * 60,
+    workEnd: 19 * 60,
+    selected: false,
+    optional: true,
+  },
 ];
 
 const storageKey = "crew-time-board-work-hours";
@@ -51,21 +65,36 @@ const flagSvgs = {
     <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true" focusable="false">
       <rect width="36" height="24" rx="2" fill="#fff" />
       <circle cx="18" cy="12" r="5.2" fill="#cd2e3a" />
-      <path d="M12.8 12a5.2 5.2 0 0 0 10.4 0 2.6 2.6 0 0 1-5.2 0 2.6 2.6 0 0 0-5.2 0Z" fill="#0047a0" />
-      <defs>
-        <g id="bar-solid"><rect x="-3.6" y="-0.45" width="7.2" height="0.9" rx="0.12" /></g>
-        <g id="bar-broken"><rect x="-3.6" y="-0.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-0.45" width="2.65" height="0.9" rx="0.12" /></g>
-        <g id="geon"><use href="#bar-solid" y="-2" /><use href="#bar-solid" /><use href="#bar-solid" y="2" /></g>
-        <g id="gam"><use href="#bar-broken" y="-2" /><use href="#bar-solid" /><use href="#bar-broken" y="2" /></g>
-        <g id="ri"><use href="#bar-solid" y="-2" /><use href="#bar-broken" /><use href="#bar-solid" y="2" /></g>
-        <g id="gon"><use href="#bar-broken" y="-2" /><use href="#bar-broken" /><use href="#bar-broken" y="2" /></g>
-      </defs>
+      <path d="M12.8 13.6c1.25-3.4 4.15-3.4 5.2-1.6 1.05 1.8 3.95 1.8 5.2-1.6a5.2 5.2 0 0 1-10.4 3.2Z" fill="#0047a0" />
       <g fill="#111">
-        <use href="#geon" transform="translate(9.2 6.2) rotate(-33)" />
-        <use href="#gam" transform="translate(26.8 6.2) rotate(33)" />
-        <use href="#ri" transform="translate(9.2 17.8) rotate(33)" />
-        <use href="#gon" transform="translate(26.8 17.8) rotate(-33)" />
+        <g transform="translate(9.2 6.2) rotate(-33)">
+          <rect x="-3.6" y="-2.45" width="7.2" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="-0.45" width="7.2" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="1.55" width="7.2" height="0.9" rx="0.12" />
+        </g>
+        <g transform="translate(26.8 6.2) rotate(33)">
+          <rect x="-3.6" y="-2.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-2.45" width="2.65" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="-0.45" width="7.2" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="1.55" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="1.55" width="2.65" height="0.9" rx="0.12" />
+        </g>
+        <g transform="translate(9.2 17.8) rotate(33)">
+          <rect x="-3.6" y="-2.45" width="7.2" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="-0.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-0.45" width="2.65" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="1.55" width="7.2" height="0.9" rx="0.12" />
+        </g>
+        <g transform="translate(26.8 17.8) rotate(-33)">
+          <rect x="-3.6" y="-2.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-2.45" width="2.65" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="-0.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-0.45" width="2.65" height="0.9" rx="0.12" />
+          <rect x="-3.6" y="1.55" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="1.55" width="2.65" height="0.9" rx="0.12" />
+        </g>
       </g>
+    </svg>
+  `,
+  NL: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#fff" />
+      <rect width="32" height="7.34" rx="2" fill="#ae1c28" />
+      <rect width="32" height="7.34" y="14.66" rx="2" fill="#21468b" />
     </svg>
   `,
   US: `
@@ -216,7 +245,7 @@ function workHoursLabel(zone) {
 }
 
 function flagName(zone) {
-  return `<span class="flag" role="img" aria-label="${zone.flagLabel} 국기">${flagSvgs[zone.holidayCalendar]}</span><span>${zone.label}</span>`;
+  return `<span class="flag-label"><span class="flag" role="img" aria-label="${zone.flagLabel} 국기">${flagSvgs[zone.holidayCalendar]}</span><span>${zone.label}</span></span>`;
 }
 
 function textFlagName(zone) {
@@ -229,6 +258,10 @@ function suggestionZoneName(zone) {
 
 function selectedZones() {
   return zones.filter((zone) => zone.selected);
+}
+
+function visibleZones() {
+  return zones.filter((zone) => zone.selected || !zone.optional);
 }
 
 function syncParticipantInputs() {
@@ -249,9 +282,9 @@ function buildParticipantControls() {
     label.dataset.participantLabel = zone.id;
     label.style.setProperty("--zone-color", zone.accent);
     label.innerHTML = `
-      <input data-participant-zone="${zone.id}" type="checkbox" checked />
+      <input data-participant-zone="${zone.id}" type="checkbox" ${zone.selected ? "checked" : ""} />
       <span class="participant-mark" aria-hidden="true"></span>
-      <span>${flagName(zone)}</span>
+      ${flagName(zone)}
     `;
 
     const input = label.querySelector("input");
@@ -282,7 +315,7 @@ function buildHolidayCalendars(data) {
 
 async function loadHolidays() {
   try {
-    const response = await fetch("./holidays.json?v=20260610-1", {
+    const response = await fetch("./holidays.json?v=20260611-1", {
       cache: "no-store",
     });
     if (!response.ok) throw new Error(`Holiday load failed: ${response.status}`);
@@ -602,7 +635,10 @@ function scoreSummary(score, maxScore, statuses = []) {
 
 function renderLiveClocks() {
   const now = new Date();
-  els.liveClocks.innerHTML = zones
+  const visible = visibleZones();
+  els.liveClocks.dataset.count = String(visible.length);
+  els.liveClocks.parentElement.classList.toggle("is-expanded", visible.length > 3);
+  els.liveClocks.innerHTML = visible
     .map(
       (zone) => `
         <div class="live-clock">
@@ -715,7 +751,7 @@ function render() {
   const displayPieces = [];
   const selectedStatuses = [];
 
-  for (const zone of zones) {
+  for (const zone of visibleZones()) {
     const { row, status } = buildZoneRow(
       zone,
       instant,
@@ -752,6 +788,7 @@ function render() {
   els.shareInput.value = share;
 
   renderSuggestions(baseDateValue, baseZone, duration);
+  renderLiveClocks();
 }
 
 function syncTimeControlsFromZone() {

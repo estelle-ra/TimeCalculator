@@ -109,6 +109,10 @@ h2 {
   width: min(470px, 100%);
 }
 
+.live-clock-panel.is-expanded {
+  width: min(620px, 100%);
+}
+
 .live-clock-heading {
   margin-bottom: 8px;
   color: var(--muted);
@@ -124,6 +128,10 @@ h2 {
   grid-template-columns: repeat(3, minmax(118px, 1fr));
   gap: 8px;
   width: 100%;
+}
+
+.live-clock-panel.is-expanded .live-clocks {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
 }
 
 .live-clock {
@@ -251,7 +259,7 @@ h2 {
 
 .participants-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
   margin-top: 8px;
 }
@@ -622,6 +630,13 @@ input[type="range"] {
   line-height: 1;
 }
 
+.flag-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
 .flag-svg {
   display: block;
   width: 100%;
@@ -633,6 +648,12 @@ input[type="range"] {
 .live-clock-name .flag {
   width: 22px;
   height: 15px;
+}
+
+.work-hint .flag-label,
+.hint .flag-label {
+  gap: 7px;
+  margin-inline: 2px;
 }
 
 .zone-name > div > span,
