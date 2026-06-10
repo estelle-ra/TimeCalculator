@@ -540,10 +540,11 @@ function buildZoneRow(zone, instant, endInstant, duration, baseDateValue) {
   return { row, status };
 }
 
-function scoreSummary(score, maxScore) {
+function scoreSummary(score, maxScore, statuses = []) {
+  const hasUnavailable = statuses.some((status) => status.score === 0);
   const ratio = maxScore > 0 ? score / maxScore : 0;
-  if (ratio >= 0.8) return { label: "좋음", className: "good", title: "팀 적합도 좋음" };
-  if (ratio >= 0.5) {
+  if (!hasUnavailable && ratio >= 0.8) return { label: "좋음", className: "good", title: "팀 적합도 좋음" };
+  if (!hasUnavailable && ratio >= 0.5) {
     return { label: "타협 가능", className: "warn", title: "팀 적합도 보통" };
   }
   return { label: "어려움", className: "bad", title: "팀 적합도 낮음" };
@@ -573,6 +574,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
     const instant = zonedTimeToUtc(baseDateValue, timeValue, baseZone);
     let score = 0;
     const labels = [];
+    const statuses = [];
 
     for (const zone of selected) {
       const status = rangeStatus(
@@ -582,6 +584,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
         instant,
       );
       score += status.score;
+      statuses.push(status);
       labels.push(
         `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
           instant,
@@ -591,18 +594,32 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
       );
     }
 
-    candidates.push({ minute, timeValue, instant, score, maxScore, labels });
+    const allAvailable = statuses.every((status) => status.score > 0);
+    candidates.push({
+      minute,
+      timeValue,
+      instant,
+      score,
+      maxScore,
+      labels,
+      statuses,
+      allAvailable,
+    });
   }
 
   candidates.sort((a, b) => {
+    if (a.allAvailable !== b.allAvailable) return a.allAvailable ? -1 : 1;
     if (b.score !== a.score) return b.score - a.score;
     const current = Number(els.timeSlider.value);
     return Math.abs(a.minute - current) - Math.abs(b.minute - current);
   });
 
   els.suggestions.innerHTML = "";
-  for (const candidate of candidates.slice(0, 5)) {
-    const summary = scoreSummary(candidate.score, candidate.maxScore);
+  const availableCandidates = candidates.filter((candidate) => candidate.allAvailable);
+  const visibleCandidates = availableCandidates.length > 0 ? availableCandidates : candidates;
+
+  for (const candidate of visibleCandidates.slice(0, 5)) {
+    const summary = scoreSummary(candidate.score, candidate.maxScore, candidate.statuses);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "suggestion";
@@ -645,6 +662,7 @@ function render() {
 
   let score = 0;
   const displayPieces = [];
+  const selectedStatuses = [];
 
   for (const zone of zones) {
     const { row, status } = buildZoneRow(
@@ -656,6 +674,7 @@ function render() {
     );
     if (zone.selected) {
       score += status.score;
+      selectedStatuses.push(status);
       displayPieces.push(
         `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
           instant,
@@ -667,7 +686,7 @@ function render() {
     els.zoneList.append(row);
   }
 
-  const summary = scoreSummary(score, maxScore);
+  const summary = scoreSummary(score, maxScore, selectedStatuses);
   els.scoreTitle.textContent = summary.title;
   els.scorePill.textContent = `${summary.label} · ${score}/${maxScore}`;
   els.scorePill.className = `score-pill ${summary.className}`;
