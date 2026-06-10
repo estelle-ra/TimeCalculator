@@ -104,12 +104,19 @@ h2 {
 }
 
 .live-clock {
-  min-height: 74px;
+  min-height: 88px;
   padding: 11px 12px;
   border: 1px solid rgba(216, 224, 232, 0.9);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.74);
   backdrop-filter: blur(10px);
+}
+
+.live-clock-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .live-clock-name {
@@ -121,12 +128,32 @@ h2 {
   font-weight: 700;
 }
 
+.live-now {
+  padding: 3px 6px;
+  border: 1px solid rgba(29, 78, 216, 0.16);
+  border-radius: 999px;
+  background: rgba(29, 78, 216, 0.08);
+  color: var(--blue);
+  font-size: 0.58rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .live-clock strong {
   display: block;
   margin-top: 5px;
   font-size: 1.28rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+}
+
+.live-clock-date {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .control-grid,

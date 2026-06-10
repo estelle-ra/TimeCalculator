@@ -556,8 +556,12 @@ function renderLiveClocks() {
     .map(
       (zone) => `
         <div class="live-clock">
-          <span class="live-clock-name">${flagName(zone)}</span>
+          <div class="live-clock-top">
+            <span class="live-clock-name">${flagName(zone)}</span>
+            <span class="live-now">NOW</span>
+          </div>
           <strong>${formatClock(now, zone.id, true)}</strong>
+          <span class="live-clock-date">${formatDate(now, zone.id)}</span>
         </div>
       `,
     )
