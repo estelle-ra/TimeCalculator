@@ -395,6 +395,14 @@ function dayRelation(date, timeZone, baseDateValue) {
   return diff > 0 ? `+${diff}일` : `${diff}일`;
 }
 
+function compactDayTag(date, timeZone, baseDateValue) {
+  const [year, month, day] = baseDateValue.split("-").map(Number);
+  const baseKey = Date.UTC(year, month - 1, day);
+  const diff = Math.round((localDayKey(date, timeZone) - baseKey) / 86400000);
+  if (diff === 0) return "";
+  return diff > 0 ? `(+${diff}일)` : `(${diff}일)`;
+}
+
 function rangeStatus(startMinute, duration, zone, instant) {
   const endMinute = startMinute + duration;
   const crossesMidnight = endMinute > 1440;
@@ -519,7 +527,13 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
         instant,
       );
       score += status.score;
-      labels.push(`${textFlagName(zone)} ${formatClock(instant, zone.id)}`);
+      labels.push(
+        `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
+          instant,
+          zone.id,
+          baseDateValue,
+        )}`,
+      );
     }
 
     candidates.push({ minute, timeValue, instant, score, labels });
@@ -584,7 +598,13 @@ function render() {
       baseDateValue,
     );
     score += status.score;
-    displayPieces.push(`${textFlagName(zone)} ${formatClock(instant, zone.id)}`);
+    displayPieces.push(
+      `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
+        instant,
+        zone.id,
+        baseDateValue,
+      )}`,
+    );
     els.zoneList.append(row);
   }
 
