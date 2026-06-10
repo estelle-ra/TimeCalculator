@@ -82,18 +82,27 @@
             </select>
           </label>
 
-          <section class="work-hours-block" aria-label="업무 시간 설정">
-            <div class="work-hours-heading">
+          <details class="work-hours-block">
+            <summary class="work-hours-summary">
               <div>
-                <span>업무 시간</span>
-                <small>지역별 판정 기준</small>
+                <span>업무시간 수정</span>
+                <small>기본값 10:00-19:00</small>
               </div>
+              <span class="summary-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="work-hours-content">
+              <div class="work-hours-heading">
+                <div>
+                  <span>지역별 업무 기준</span>
+                  <small>주말과 공휴일은 업무시간에서 제외</small>
+                </div>
               <button class="text-button" id="resetWorkHours" type="button">
                 기본값
               </button>
+              </div>
+              <div class="work-hours-list" id="workHours"></div>
             </div>
-            <div class="work-hours-list" id="workHours"></div>
-          </section>
+          </details>
         </form>
 
         <aside class="panel summary-panel" aria-label="회의 요약">
@@ -140,6 +149,6 @@
       </section>
     </main>
 
-    <script src="./app.js?v=20260610-9"></script>
+    <script src="./app.js?v=20260610-10"></script>
   </body>
 </html>

@@ -567,9 +567,9 @@ function render() {
   const endInstant = new Date(instant.getTime() + duration * 60 * 1000);
 
   els.sliderLabel.textContent = baseTimeValue;
-  els.workHint.textContent = zones
+  els.workHint.textContent = `업무 기준: ${zones
     .map((zone) => `${textFlagName(zone)} ${hourLabel(zone.workStart)}-${hourLabel(zone.workEnd)}`)
-    .join(" · ");
+    .join(" · ")}`;
   els.zoneList.innerHTML = "";
 
   let score = 0;

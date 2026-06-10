@@ -155,6 +155,7 @@ h2 {
   display: flex;
   align-items: start;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 18px;
 }
@@ -206,10 +207,65 @@ h2 {
 
 .work-hours-block {
   margin-top: 18px;
-  padding: 14px;
   border: 1px solid #dfe7ef;
   border-radius: 8px;
   background: #fff;
+}
+
+.work-hours-block[open] {
+  background: #fff;
+}
+
+.work-hours-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 50px;
+  padding: 0 14px;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.work-hours-summary::-webkit-details-marker {
+  display: none;
+}
+
+.work-hours-summary span:not(.summary-icon) {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.work-hours-summary small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.summary-icon {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform 160ms ease;
+}
+
+.work-hours-block[open] .summary-icon {
+  transform: rotate(225deg);
+}
+
+.work-hours-content {
+  padding: 0 14px 14px;
+}
+
+.work-hours-block:not([open]) .work-hours-content {
+  display: none;
 }
 
 .work-hours-heading,
@@ -225,6 +281,7 @@ h2 {
 .work-hours-heading {
   align-items: start;
   margin-bottom: 12px;
+  padding-top: 2px;
 }
 
 .work-hours-heading span,
@@ -354,7 +411,7 @@ input[type="range"] {
   background: #eef3f6;
   font-size: 0.78rem;
   font-weight: 800;
-  white-space: nowrap;
+  line-height: 1.35;
 }
 
 .score-pill.good {
