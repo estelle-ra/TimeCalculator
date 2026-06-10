@@ -11,6 +11,7 @@ const zones = [
     defaultWorkEnd: 19 * 60,
     workStart: 10 * 60,
     workEnd: 19 * 60,
+    selected: true,
   },
   {
     id: "America/New_York",
@@ -24,6 +25,7 @@ const zones = [
     defaultWorkEnd: 19 * 60,
     workStart: 10 * 60,
     workEnd: 19 * 60,
+    selected: true,
   },
   {
     id: "America/Los_Angeles",
@@ -37,6 +39,7 @@ const zones = [
     defaultWorkEnd: 19 * 60,
     workStart: 10 * 60,
     workEnd: 19 * 60,
+    selected: true,
   },
 ];
 
@@ -55,6 +58,7 @@ const els = {
   minus15: document.querySelector("#minus15"),
   plus15: document.querySelector("#plus15"),
   zoneList: document.querySelector("#zoneList"),
+  participants: document.querySelector("#participants"),
   workHours: document.querySelector("#workHours"),
   workHint: document.querySelector("#workHint"),
   resetWorkHours: document.querySelector("#resetWorkHours"),
@@ -171,6 +175,48 @@ function flagName(zone) {
 
 function textFlagName(zone) {
   return `${zone.flag} ${zone.label}`;
+}
+
+function selectedZones() {
+  return zones.filter((zone) => zone.selected);
+}
+
+function syncParticipantInputs() {
+  for (const zone of zones) {
+    const input = els.participants.querySelector(
+      `[data-participant-zone="${zone.id}"]`,
+    );
+    if (input) input.checked = zone.selected;
+  }
+}
+
+function buildParticipantControls() {
+  els.participants.innerHTML = "";
+
+  for (const zone of zones) {
+    const label = document.createElement("label");
+    label.className = "participant-toggle";
+    label.dataset.participantLabel = zone.id;
+    label.style.setProperty("--zone-color", zone.accent);
+    label.innerHTML = `
+      <input data-participant-zone="${zone.id}" type="checkbox" checked />
+      <span class="participant-mark" aria-hidden="true"></span>
+      <span>${flagName(zone)}</span>
+    `;
+
+    const input = label.querySelector("input");
+    input.addEventListener("change", () => {
+      zone.selected = input.checked;
+      if (selectedZones().length === 0) {
+        zone.selected = true;
+        input.checked = true;
+      }
+      syncParticipantInputs();
+      render();
+    });
+
+    els.participants.append(label);
+  }
 }
 
 function buildHolidayCalendars(data) {
@@ -417,8 +463,10 @@ function rangeStatus(startMinute, duration, zone, instant) {
     !crossesMidnight &&
     startMinute >= zone.workStart &&
     endMinute <= zone.workEnd;
+  const compromiseStart = Math.max(0, zone.workStart - 2 * 60);
+  const compromiseEnd = Math.min(1440, zone.workEnd + 2 * 60);
   const inEdge =
-    !crossesMidnight && startMinute >= 7 * 60 && endMinute <= 21 * 60;
+    !crossesMidnight && startMinute >= compromiseStart && endMinute <= compromiseEnd;
 
   if (inFocus) {
     return { key: "focus", label: "업무시간", score: 2 };
@@ -451,9 +499,13 @@ function renderTimeline(timeline, startMinute, duration, zone) {
 
 function buildZoneRow(zone, instant, endInstant, duration, baseDateValue) {
   const startMinute = localMinutes(instant, zone.id);
-  const status = rangeStatus(startMinute, duration, zone, instant);
+  const status = zone.selected
+    ? rangeStatus(startMinute, duration, zone, instant)
+    : { key: "excluded", label: "미참여", score: 0 };
   const row = document.createElement("article");
-  row.className = `zone-row ${zone.id === els.baseZone.value ? "is-base" : ""}`;
+  row.className = `zone-row ${zone.id === els.baseZone.value ? "is-base" : ""} ${
+    zone.selected ? "" : "is-excluded"
+  }`;
   row.style.setProperty("--zone-color", zone.accent);
 
   const zoneName = document.createElement("div");
@@ -488,9 +540,10 @@ function buildZoneRow(zone, instant, endInstant, duration, baseDateValue) {
   return { row, status };
 }
 
-function scoreSummary(score) {
-  if (score >= 5) return { label: "좋음", className: "good", title: "팀 적합도 좋음" };
-  if (score >= 3) {
+function scoreSummary(score, maxScore) {
+  const ratio = maxScore > 0 ? score / maxScore : 0;
+  if (ratio >= 0.8) return { label: "좋음", className: "good", title: "팀 적합도 좋음" };
+  if (ratio >= 0.5) {
     return { label: "타협 가능", className: "warn", title: "팀 적합도 보통" };
   }
   return { label: "어려움", className: "bad", title: "팀 적합도 낮음" };
@@ -512,6 +565,8 @@ function renderLiveClocks() {
 
 function renderSuggestions(baseDateValue, baseZone, duration) {
   const candidates = [];
+  const selected = selectedZones();
+  const maxScore = selected.length * 2;
 
   for (let minute = 0; minute < 1440; minute += 30) {
     const timeValue = minutesToTime(minute);
@@ -519,7 +574,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
     let score = 0;
     const labels = [];
 
-    for (const zone of zones) {
+    for (const zone of selected) {
       const status = rangeStatus(
         localMinutes(instant, zone.id),
         duration,
@@ -536,7 +591,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
       );
     }
 
-    candidates.push({ minute, timeValue, instant, score, labels });
+    candidates.push({ minute, timeValue, instant, score, maxScore, labels });
   }
 
   candidates.sort((a, b) => {
@@ -547,7 +602,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
 
   els.suggestions.innerHTML = "";
   for (const candidate of candidates.slice(0, 5)) {
-    const summary = scoreSummary(candidate.score);
+    const summary = scoreSummary(candidate.score, candidate.maxScore);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "suggestion";
@@ -579,9 +634,11 @@ function render() {
   const duration = Number(els.duration.value);
   const instant = zonedTimeToUtc(baseDateValue, baseTimeValue, baseZone);
   const endInstant = new Date(instant.getTime() + duration * 60 * 1000);
+  const selected = selectedZones();
+  const maxScore = selected.length * 2;
 
   els.sliderLabel.textContent = baseTimeValue;
-  els.workHint.textContent = `업무 기준: ${zones
+  els.workHint.textContent = `업무 기준(타협 ±2h): ${selected
     .map((zone) => `${textFlagName(zone)} ${hourLabel(zone.workStart)}-${hourLabel(zone.workEnd)}`)
     .join(" · ")}`;
   els.zoneList.innerHTML = "";
@@ -597,22 +654,24 @@ function render() {
       duration,
       baseDateValue,
     );
-    score += status.score;
-    displayPieces.push(
-      `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
-        instant,
-        zone.id,
-        baseDateValue,
-      )}`,
-    );
+    if (zone.selected) {
+      score += status.score;
+      displayPieces.push(
+        `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
+          instant,
+          zone.id,
+          baseDateValue,
+        )}`,
+      );
+    }
     els.zoneList.append(row);
   }
 
-  const summary = scoreSummary(score);
+  const summary = scoreSummary(score, maxScore);
   els.scoreTitle.textContent = summary.title;
-  els.scorePill.textContent = `${summary.label} · ${score}/6`;
+  els.scorePill.textContent = `${summary.label} · ${score}/${maxScore}`;
   els.scorePill.className = `score-pill ${summary.className}`;
-  els.scoreMeter.style.width = `${Math.round((score / 6) * 100)}%`;
+  els.scoreMeter.style.width = `${Math.round((score / maxScore) * 100)}%`;
 
   const durationLabel =
     duration >= 60 && duration % 60 === 0
@@ -650,6 +709,7 @@ async function init() {
   els.baseZone.value = "Asia/Seoul";
   await loadHolidays();
   loadWorkHours();
+  buildParticipantControls();
   buildWorkHourControls();
   setNowInBaseZone();
   renderLiveClocks();
