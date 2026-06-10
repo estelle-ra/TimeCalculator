@@ -250,6 +250,7 @@ h2 {
 
 .field input,
 .field select,
+.time-picker-button,
 .work-hour-row input,
 .share-actions input {
   width: 100%;
@@ -264,10 +265,61 @@ h2 {
 
 .field input:focus,
 .field select:focus,
+.time-picker-button:focus-visible,
 .work-hour-row input:focus,
 .share-actions input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.14);
+}
+
+.time-picker {
+  position: relative;
+}
+
+.time-picker-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  font-weight: 800;
+}
+
+.time-picker-button::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  opacity: 0.76;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4.58l3.2 3.2-1.42 1.42L11 12.42V7h2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4.58l3.2 3.2-1.42 1.42L11 12.42V7h2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.time-picker-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #cbd5df;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(24, 33, 47, 0.16);
+}
+
+.time-picker-menu label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.time-picker-menu[hidden] {
+  display: none;
 }
 
 .split-fields {

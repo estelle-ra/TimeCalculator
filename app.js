@@ -19,6 +19,8 @@ const messages = {
     baseRegion: "기준 지역",
     date: "날짜",
     time: "시간",
+    hourSelect: "시",
+    minuteSelect: "분",
     moveWithinDay: "하루 안에서 이동",
     meetingTimeAdjust: "회의 시작 시간 조정",
     minus15Title: "15분 전",
@@ -83,6 +85,8 @@ const messages = {
     baseRegion: "Base region",
     date: "Date",
     time: "Time",
+    hourSelect: "Hour",
+    minuteSelect: "Minute",
     moveWithinDay: "Move within day",
     meetingTimeAdjust: "Adjust meeting start time",
     minus15Title: "15 minutes earlier",
@@ -284,6 +288,11 @@ const els = {
   baseZone: document.querySelector("#baseZone"),
   baseDate: document.querySelector("#baseDate"),
   baseTime: document.querySelector("#baseTime"),
+  baseTimePicker: document.querySelector("#baseTimePicker"),
+  baseTimeButton: document.querySelector("#baseTimeButton"),
+  baseTimeMenu: document.querySelector("#baseTimeMenu"),
+  baseTimeHour: document.querySelector("#baseTimeHour"),
+  baseTimeMinute: document.querySelector("#baseTimeMinute"),
   timeSlider: document.querySelector("#timeSlider"),
   sliderLabel: document.querySelector("#sliderLabel"),
   duration: document.querySelector("#duration"),
@@ -448,6 +457,51 @@ function timeToMinutes(time) {
   if (hour < 0 || hour > 24 || minute < 0 || minute > 59) return 0;
   if (hour === 24 && minute !== 0) return 0;
   return hour * 60 + minute;
+}
+
+function buildTimePickerOptions() {
+  els.baseTimeHour.innerHTML = "";
+  els.baseTimeMinute.innerHTML = "";
+
+  for (let hour = 0; hour < 24; hour += 1) {
+    const option = document.createElement("option");
+    option.value = pad(hour);
+    option.textContent = pad(hour);
+    els.baseTimeHour.append(option);
+  }
+
+  for (let minute = 0; minute < 60; minute += 15) {
+    const option = document.createElement("option");
+    option.value = pad(minute);
+    option.textContent = pad(minute);
+    els.baseTimeMinute.append(option);
+  }
+}
+
+function syncTimePickerDisplay() {
+  const value = els.baseTime.value || "00:00";
+  const [hour, minute] = value.split(":");
+  els.baseTimeButton.textContent = value;
+  els.baseTimeHour.value = pad(Number(hour) || 0);
+  els.baseTimeMinute.value = pad(Number(minute) || 0);
+}
+
+function closeTimePicker() {
+  els.baseTimeMenu.hidden = true;
+  els.baseTimeButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleTimePicker() {
+  const nextOpen = els.baseTimeMenu.hidden;
+  els.baseTimeMenu.hidden = !nextOpen;
+  els.baseTimeButton.setAttribute("aria-expanded", String(nextOpen));
+  if (nextOpen) els.baseTimeHour.focus();
+}
+
+function updateTimeFromPicker() {
+  const minutes = Number(els.baseTimeHour.value) * 60 + Number(els.baseTimeMinute.value);
+  els.baseTime.value = minutesToTime(minutes);
+  syncTimeControlsFromZone();
 }
 
 function workHoursLabel(zone) {
@@ -711,6 +765,7 @@ function addMinutesToInput(minutesDelta) {
   const wrapped = ((next % 1440) + 1440) % 1440;
   els.timeSlider.value = String(wrapped);
   els.baseTime.value = minutesToTime(wrapped);
+  syncTimePickerDisplay();
   render();
 }
 
@@ -996,6 +1051,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
     button.addEventListener("click", () => {
       els.baseTime.value = candidate.timeValue;
       els.timeSlider.value = String(candidate.minute);
+      syncTimePickerDisplay();
       render();
     });
     els.suggestions.append(button);
@@ -1062,6 +1118,7 @@ function render() {
 
 function syncTimeControlsFromZone() {
   els.timeSlider.value = String(timeToMinutes(els.baseTime.value || "00:00"));
+  syncTimePickerDisplay();
   render();
 }
 
@@ -1071,6 +1128,7 @@ function setNowInBaseZone() {
   els.baseDate.value = dateInputFor(now, els.baseZone.value);
   els.baseTime.value = minutesToTime(rounded);
   els.timeSlider.value = String(rounded % 1440);
+  syncTimePickerDisplay();
   render();
 }
 
@@ -1082,6 +1140,7 @@ async function init() {
   els.baseZone.value = "Asia/Seoul";
   await loadHolidays();
   loadWorkHours();
+  buildTimePickerOptions();
   buildParticipantControls();
   buildWorkHourControls();
   setNowInBaseZone();
@@ -1091,10 +1150,18 @@ async function init() {
   els.baseZone.addEventListener("change", setNowInBaseZone);
   els.baseDate.addEventListener("input", render);
   els.baseDate.addEventListener("change", render);
-  els.baseTime.addEventListener("input", syncTimeControlsFromZone);
-  els.baseTime.addEventListener("change", syncTimeControlsFromZone);
+  els.baseTimeButton.addEventListener("click", toggleTimePicker);
+  els.baseTimeHour.addEventListener("change", updateTimeFromPicker);
+  els.baseTimeMinute.addEventListener("change", updateTimeFromPicker);
+  document.addEventListener("click", (event) => {
+    if (!els.baseTimePicker.contains(event.target)) closeTimePicker();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeTimePicker();
+  });
   els.timeSlider.addEventListener("input", () => {
     els.baseTime.value = minutesToTime(Number(els.timeSlider.value));
+    syncTimePickerDisplay();
     render();
   });
   els.duration.addEventListener("change", render);
