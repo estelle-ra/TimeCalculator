@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>협업 시차 계산기</title>
+    <meta
+      name="description"
+      content="서울, 뉴욕, LA 크루가 함께 회의 시간을 맞추는 협업 시차 계산기"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="top-band" aria-label="현재 시간">
+        <div>
+          <p class="eyebrow">Collaboration Time Calculator</p>
+          <h1>협업 시차 계산기</h1>
+        </div>
+        <div class="live-clocks" id="liveClocks" aria-live="polite"></div>
+      </section>
+
+      <section class="control-grid" aria-label="회의 기준 시간 설정">
+        <form class="panel control-panel" id="timeForm">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">기준</p>
+              <h2>회의 시작</h2>
+            </div>
+            <button class="text-button" id="nowButton" type="button">현재</button>
+          </div>
+
+          <label class="field">
+            <span>기준 지역</span>
+            <select id="baseZone"></select>
+          </label>
+
+          <div class="split-fields">
+            <label class="field">
+              <span>날짜</span>
+              <input id="baseDate" type="date" />
+            </label>
+            <label class="field">
+              <span>시간</span>
+              <input id="baseTime" type="time" step="900" />
+            </label>
+          </div>
+
+          <div class="range-block">
+            <div class="range-meta">
+              <span>하루 안에서 이동</span>
+              <strong id="sliderLabel">00:00</strong>
+            </div>
+            <input
+              id="timeSlider"
+              type="range"
+              min="0"
+              max="1439"
+              step="15"
+              aria-label="회의 시작 시간 조정"
+            />
+            <div class="range-actions">
+              <button type="button" class="icon-button" id="minus15" title="15분 전">
+                -15
+              </button>
+              <button type="button" class="icon-button" id="plus15" title="15분 후">
+                +15
+              </button>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>회의 길이</span>
+            <select id="duration">
+              <option value="15">15분</option>
+              <option value="30">30분</option>
+              <option value="45">45분</option>
+              <option value="60" selected>1시간</option>
+              <option value="90">1시간 30분</option>
+              <option value="120">2시간</option>
+              <option value="180">3시간</option>
+            </select>
+          </label>
+
+          <section class="work-hours-block" aria-label="업무 시간 설정">
+            <div class="work-hours-heading">
+              <div>
+                <span>업무 시간</span>
+                <small>지역별 판정 기준</small>
+              </div>
+              <button class="text-button" id="resetWorkHours" type="button">
+                기본값
+              </button>
+            </div>
+            <div class="work-hours-list" id="workHours"></div>
+          </section>
+        </form>
+
+        <aside class="panel summary-panel" aria-label="회의 요약">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">판정</p>
+              <h2 id="scoreTitle">팀 적합도</h2>
+            </div>
+            <span class="score-pill" id="scorePill">계산 중</span>
+          </div>
+          <div class="score-meter" aria-hidden="true">
+            <span id="scoreMeter"></span>
+          </div>
+          <p class="share-line" id="shareText"></p>
+          <div class="share-actions">
+            <input id="shareInput" readonly aria-label="공유 문구" />
+            <button class="text-button" id="copyButton" type="button">복사</button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="board-grid" aria-label="지역별 시간">
+        <div class="panel board-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">현지 시간</p>
+              <h2>서울 · 뉴욕 · LA</h2>
+            </div>
+            <span class="hint" id="workHint">업무 기준 적용</span>
+          </div>
+          <div class="zone-list" id="zoneList"></div>
+        </div>
+
+        <aside class="panel suggestion-panel" aria-label="추천 회의 시간">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">추천</p>
+              <h2>같은 날짜 후보</h2>
+            </div>
+            <span class="hint">30분 간격</span>
+          </div>
+          <div class="suggestions" id="suggestions"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js?v=20260610-9"></script>
+  </body>
+</html>
