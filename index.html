@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>협업 시차 계산기</title>
+    <title>🌐 협업 시차 계산기</title>
     <meta
       name="description"
       content="서울, 뉴욕, LA 크루가 함께 회의 시간을 맞추는 협업 시차 계산기"
@@ -15,9 +15,12 @@
       <section class="top-band" aria-label="현재 시간">
         <div>
           <p class="eyebrow">Collaboration Time Calculator</p>
-          <h1>협업 시차 계산기</h1>
+          <h1><span class="title-icon" aria-hidden="true">🌐</span>협업 시차 계산기</h1>
         </div>
-        <div class="live-clocks" id="liveClocks" aria-live="polite"></div>
+        <div class="live-clock-panel">
+          <div class="live-clock-heading">NOW</div>
+          <div class="live-clocks" id="liveClocks" aria-live="polite"></div>
+        </div>
       </section>
 
       <section class="control-grid" aria-label="회의 기준 시간 설정">
@@ -154,6 +157,6 @@
       </section>
     </main>
 
-    <script src="./app.js?v=20260611-2"></script>
+    <script src="./app.js?v=20260611-3"></script>
   </body>
 </html>

@@ -46,6 +46,44 @@ const zones = [
 const storageKey = "crew-time-board-work-hours";
 let holidayCalendars = {};
 
+const flagSvgs = {
+  KR: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#fff" />
+      <circle cx="16" cy="11" r="4.5" fill="#cd2e3a" />
+      <path d="M11.5 11a4.5 4.5 0 0 0 9 0 2.25 2.25 0 0 1-4.5 0 2.25 2.25 0 0 0-4.5 0Z" fill="#0047a0" />
+      <g stroke="#111" stroke-width="1.1" stroke-linecap="square">
+        <path d="M6 5.2h5M6 7.2h5M6 9.2h5" transform="rotate(-32 8.5 7.2)" />
+        <path d="M21 5.2h5M21 9.2h5" transform="rotate(32 23.5 7.2)" />
+        <path d="M6 12.8h5M6 16.8h5" transform="rotate(32 8.5 14.8)" />
+        <path d="M21 12.8h5M21 14.8h5M21 16.8h5" transform="rotate(-32 23.5 14.8)" />
+      </g>
+    </svg>
+  `,
+  US: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#fff" />
+      <g fill="#b22234">
+        <rect width="32" height="1.7" y="0" />
+        <rect width="32" height="1.7" y="3.4" />
+        <rect width="32" height="1.7" y="6.8" />
+        <rect width="32" height="1.7" y="10.2" />
+        <rect width="32" height="1.7" y="13.6" />
+        <rect width="32" height="1.7" y="17" />
+        <rect width="32" height="1.7" y="20.4" />
+      </g>
+      <rect width="14.4" height="11.9" fill="#3c3b6e" />
+      <g fill="#fff">
+        <circle cx="2.2" cy="2" r=".45" /><circle cx="4.6" cy="2" r=".45" /><circle cx="7" cy="2" r=".45" /><circle cx="9.4" cy="2" r=".45" /><circle cx="11.8" cy="2" r=".45" />
+        <circle cx="3.4" cy="4" r=".45" /><circle cx="5.8" cy="4" r=".45" /><circle cx="8.2" cy="4" r=".45" /><circle cx="10.6" cy="4" r=".45" /><circle cx="13" cy="4" r=".45" />
+        <circle cx="2.2" cy="6" r=".45" /><circle cx="4.6" cy="6" r=".45" /><circle cx="7" cy="6" r=".45" /><circle cx="9.4" cy="6" r=".45" /><circle cx="11.8" cy="6" r=".45" />
+        <circle cx="3.4" cy="8" r=".45" /><circle cx="5.8" cy="8" r=".45" /><circle cx="8.2" cy="8" r=".45" /><circle cx="10.6" cy="8" r=".45" /><circle cx="13" cy="8" r=".45" />
+        <circle cx="2.2" cy="10" r=".45" /><circle cx="4.6" cy="10" r=".45" /><circle cx="7" cy="10" r=".45" /><circle cx="9.4" cy="10" r=".45" /><circle cx="11.8" cy="10" r=".45" />
+      </g>
+    </svg>
+  `,
+};
+
 const els = {
   liveClocks: document.querySelector("#liveClocks"),
   baseZone: document.querySelector("#baseZone"),
@@ -170,11 +208,11 @@ function workHoursLabel(zone) {
 }
 
 function flagName(zone) {
-  return `<span class="flag" role="img" aria-label="${zone.flagLabel} 국기">${zone.flag}</span><span>${zone.label}</span>`;
+  return `<span class="flag" role="img" aria-label="${zone.flagLabel} 국기">${flagSvgs[zone.holidayCalendar]}</span><span>${zone.label}</span>`;
 }
 
 function textFlagName(zone) {
-  return `${zone.flag} ${zone.label}`;
+  return zone.label;
 }
 
 function selectedZones() {
@@ -556,10 +594,7 @@ function renderLiveClocks() {
     .map(
       (zone) => `
         <div class="live-clock">
-          <div class="live-clock-top">
-            <span class="live-clock-name">${flagName(zone)}</span>
-            <span class="live-now">NOW</span>
-          </div>
+          <span class="live-clock-name">${flagName(zone)}</span>
           <strong>${formatClock(now, zone.id, true)}</strong>
           <span class="live-clock-date">${formatDate(now, zone.id)}</span>
         </div>
@@ -590,7 +625,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
       score += status.score;
       statuses.push(status);
       labels.push(
-        `${textFlagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
+        `${flagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
           instant,
           zone.id,
           baseDateValue,
@@ -659,8 +694,8 @@ function render() {
   const maxScore = selected.length * 2;
 
   els.sliderLabel.textContent = baseTimeValue;
-  els.workHint.textContent = `업무 기준(타협 ±2h): ${selected
-    .map((zone) => `${textFlagName(zone)} ${hourLabel(zone.workStart)}-${hourLabel(zone.workEnd)}`)
+  els.workHint.innerHTML = `업무 기준(타협 ±2h): ${selected
+    .map((zone) => `${flagName(zone)} ${hourLabel(zone.workStart)}-${hourLabel(zone.workEnd)}`)
     .join(" · ")}`;
   els.zoneList.innerHTML = "";
 
