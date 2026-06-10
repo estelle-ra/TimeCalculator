@@ -48,15 +48,23 @@ let holidayCalendars = {};
 
 const flagSvgs = {
   KR: `
-    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
-      <rect width="32" height="22" rx="2" fill="#fff" />
-      <circle cx="16" cy="11" r="4.5" fill="#cd2e3a" />
-      <path d="M11.5 11a4.5 4.5 0 0 0 9 0 2.25 2.25 0 0 1-4.5 0 2.25 2.25 0 0 0-4.5 0Z" fill="#0047a0" />
-      <g stroke="#111" stroke-width="1.1" stroke-linecap="square">
-        <path d="M6 5.2h5M6 7.2h5M6 9.2h5" transform="rotate(-32 8.5 7.2)" />
-        <path d="M21 5.2h5M21 9.2h5" transform="rotate(32 23.5 7.2)" />
-        <path d="M6 12.8h5M6 16.8h5" transform="rotate(32 8.5 14.8)" />
-        <path d="M21 12.8h5M21 14.8h5M21 16.8h5" transform="rotate(-32 23.5 14.8)" />
+    <svg class="flag-svg" viewBox="0 0 36 24" aria-hidden="true" focusable="false">
+      <rect width="36" height="24" rx="2" fill="#fff" />
+      <circle cx="18" cy="12" r="5.2" fill="#cd2e3a" />
+      <path d="M12.8 12a5.2 5.2 0 0 0 10.4 0 2.6 2.6 0 0 1-5.2 0 2.6 2.6 0 0 0-5.2 0Z" fill="#0047a0" />
+      <defs>
+        <g id="bar-solid"><rect x="-3.6" y="-0.45" width="7.2" height="0.9" rx="0.12" /></g>
+        <g id="bar-broken"><rect x="-3.6" y="-0.45" width="2.65" height="0.9" rx="0.12" /><rect x="0.95" y="-0.45" width="2.65" height="0.9" rx="0.12" /></g>
+        <g id="geon"><use href="#bar-solid" y="-2" /><use href="#bar-solid" /><use href="#bar-solid" y="2" /></g>
+        <g id="gam"><use href="#bar-broken" y="-2" /><use href="#bar-solid" /><use href="#bar-broken" y="2" /></g>
+        <g id="ri"><use href="#bar-solid" y="-2" /><use href="#bar-broken" /><use href="#bar-solid" y="2" /></g>
+        <g id="gon"><use href="#bar-broken" y="-2" /><use href="#bar-broken" /><use href="#bar-broken" y="2" /></g>
+      </defs>
+      <g fill="#111">
+        <use href="#geon" transform="translate(9.2 6.2) rotate(-33)" />
+        <use href="#gam" transform="translate(26.8 6.2) rotate(33)" />
+        <use href="#ri" transform="translate(9.2 17.8) rotate(33)" />
+        <use href="#gon" transform="translate(26.8 17.8) rotate(-33)" />
       </g>
     </svg>
   `,
@@ -213,6 +221,10 @@ function flagName(zone) {
 
 function textFlagName(zone) {
   return zone.label;
+}
+
+function suggestionZoneName(zone) {
+  return `${zone.holidayCalendar} ${zone.label}`;
 }
 
 function selectedZones() {
@@ -625,7 +637,7 @@ function renderSuggestions(baseDateValue, baseZone, duration) {
       score += status.score;
       statuses.push(status);
       labels.push(
-        `${flagName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
+        `${suggestionZoneName(zone)} ${formatClock(instant, zone.id)}${compactDayTag(
           instant,
           zone.id,
           baseDateValue,
