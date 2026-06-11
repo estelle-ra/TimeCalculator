@@ -1,4 +1,5 @@
 const languageStorageKey = "crew-time-board-language";
+const selectedZonesStorageKey = "crew-time-board-selected-zones";
 const supportedLanguages = ["ko", "en"];
 let currentLang = supportedLanguages.includes(localStorage.getItem(languageStorageKey))
   ? localStorage.getItem(languageStorageKey)
@@ -27,6 +28,10 @@ const messages = {
     plus15Title: "15분 후",
     meetingLength: "회의 길이",
     participants: "참여 지역",
+    officeToAdd: "추가할 지역",
+    addOffice: "추가",
+    removeOffice: "제거",
+    allOfficesAdded: "모든 지역이 선택됨",
     editWorkHours: "업무시간 수정",
     workHoursDefaultHint: "기본값 10:00-19:00 · 타협 ±2시간",
     regionalWorkHours: "지역별 업무 기준",
@@ -93,6 +98,10 @@ const messages = {
     plus15Title: "15 minutes later",
     meetingLength: "Meeting length",
     participants: "Participants",
+    officeToAdd: "Office to add",
+    addOffice: "Add",
+    removeOffice: "Remove",
+    allOfficesAdded: "All offices selected",
     editWorkHours: "Edit working hours",
     workHoursDefaultHint: "Default 10:00-19:00 · compromise ±2h",
     regionalWorkHours: "Working hours by region",
@@ -208,6 +217,57 @@ const zones = [
     selected: false,
     optional: true,
   },
+  {
+    id: "Asia/Shanghai",
+    label: "상하이",
+    labels: { ko: "상하이", en: "Shanghai" },
+    region: "중국",
+    regions: { ko: "중국", en: "China" },
+    flagLabel: "중국",
+    flagLabels: { ko: "중국", en: "China" },
+    holidayCalendar: "CN",
+    accent: "#dc2626",
+    defaultWorkStart: 10 * 60,
+    defaultWorkEnd: 19 * 60,
+    workStart: 10 * 60,
+    workEnd: 19 * 60,
+    selected: false,
+    optional: true,
+  },
+  {
+    id: "Asia/Kolkata",
+    label: "벵갈루루",
+    labels: { ko: "벵갈루루", en: "Bengaluru" },
+    region: "인도",
+    regions: { ko: "인도", en: "India" },
+    flagLabel: "인도",
+    flagLabels: { ko: "인도", en: "India" },
+    holidayCalendar: "IN",
+    accent: "#7c3aed",
+    defaultWorkStart: 10 * 60,
+    defaultWorkEnd: 19 * 60,
+    workStart: 10 * 60,
+    workEnd: 19 * 60,
+    selected: false,
+    optional: true,
+  },
+  {
+    id: "America/Toronto",
+    label: "몬트리올",
+    labels: { ko: "몬트리올", en: "Montreal" },
+    region: "캐나다 동부",
+    regions: { ko: "캐나다 동부", en: "Canada East" },
+    flagLabel: "캐나다",
+    flagLabels: { ko: "캐나다", en: "Canada" },
+    holidayCalendar: "CA",
+    accent: "#e11d48",
+    defaultWorkStart: 10 * 60,
+    defaultWorkEnd: 19 * 60,
+    workStart: 10 * 60,
+    workEnd: 19 * 60,
+    selected: false,
+    optional: true,
+  },
 ];
 
 const storageKey = "crew-time-board-work-hours";
@@ -279,6 +339,32 @@ const flagSvgs = {
         <circle cx="3.4" cy="8" r=".45" /><circle cx="5.8" cy="8" r=".45" /><circle cx="8.2" cy="8" r=".45" /><circle cx="10.6" cy="8" r=".45" /><circle cx="13" cy="8" r=".45" />
         <circle cx="2.2" cy="10" r=".45" /><circle cx="4.6" cy="10" r=".45" /><circle cx="7" cy="10" r=".45" /><circle cx="9.4" cy="10" r=".45" /><circle cx="11.8" cy="10" r=".45" />
       </g>
+    </svg>
+  `,
+  CN: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#de2910" />
+      <path fill="#ffde00" d="m6.4 3.2 1 2.9h3.1L8 7.9l1 2.9-2.6-1.8-2.5 1.8 1-2.9-2.5-1.8h3.1z" />
+      <path fill="#ffde00" d="m13.5 2.4.5 1.2 1.3.1-1 .8.3 1.3-1.1-.7-1.1.7.3-1.3-1-.8 1.3-.1zm3.2 3 .5 1.2 1.3.1-1 .8.3 1.3-1.1-.7-1.1.7.3-1.3-1-.8 1.3-.1zm-.2 4.3.5 1.2 1.3.1-1 .8.3 1.3-1.1-.7-1.1.7.3-1.3-1-.8 1.3-.1zm-3.2 3 .5 1.2 1.3.1-1 .8.3 1.3-1.1-.7-1.1.7.3-1.3-1-.8 1.3-.1z" />
+    </svg>
+  `,
+  IN: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#fff" />
+      <rect width="32" height="7.34" rx="2" fill="#ff9933" />
+      <rect width="32" height="7.34" y="14.66" rx="2" fill="#138808" />
+      <circle cx="16" cy="11" r="2.65" fill="none" stroke="#000080" stroke-width=".7" />
+      <g stroke="#000080" stroke-width=".35">
+        <path d="M16 8.35v5.3M13.35 11h5.3M14.12 9.12l3.76 3.76M17.88 9.12l-3.76 3.76" />
+      </g>
+    </svg>
+  `,
+  CA: `
+    <svg class="flag-svg" viewBox="0 0 32 22" aria-hidden="true" focusable="false">
+      <rect width="32" height="22" rx="2" fill="#fff" />
+      <rect width="7.2" height="22" fill="#d52b1e" />
+      <rect x="24.8" width="7.2" height="22" fill="#d52b1e" />
+      <path fill="#d52b1e" d="m16 4.1 1 2.8 2.5-1.4-.8 3 2.9.7-2.5 1.8 1.8 2.4-3.2-.3.2 3.1h-3.8l.2-3.1-3.2.3 1.8-2.4-2.5-1.8 2.9-.7-.8-3L15 6.9z" />
     </svg>
   `,
 };
@@ -411,6 +497,9 @@ function zoneAbbr(date, timeZone) {
     "America/New_York": { "-300": "EST", "-240": "EDT" },
     "America/Los_Angeles": { "-480": "PST", "-420": "PDT" },
     "Europe/Amsterdam": { 60: "CET", 120: "CEST" },
+    "Asia/Shanghai": { 480: "CST" },
+    "Asia/Kolkata": { 330: "IST" },
+    "America/Toronto": { "-300": "EST", "-240": "EDT" },
   };
 
   const known = knownAbbreviations[timeZone]?.[String(offsetMinutes)];
@@ -525,7 +614,42 @@ function selectedZones() {
 }
 
 function visibleZones() {
-  return zones.filter((zone) => zone.selected || !zone.optional);
+  return selectedZones();
+}
+
+function saveSelectedZones() {
+  localStorage.setItem(
+    selectedZonesStorageKey,
+    JSON.stringify(selectedZones().map((zone) => zone.id)),
+  );
+}
+
+function loadSelectedZones() {
+  try {
+    const savedIds = JSON.parse(localStorage.getItem(selectedZonesStorageKey) ?? "null");
+    if (!Array.isArray(savedIds)) return;
+
+    const validIds = savedIds.filter((id) => zones.some((zone) => zone.id === id));
+    if (validIds.length === 0) return;
+
+    for (const zone of zones) {
+      zone.selected = validIds.includes(zone.id);
+    }
+  } catch {
+    localStorage.removeItem(selectedZonesStorageKey);
+  }
+}
+
+function ensureSelectedBaseZone() {
+  const selected = selectedZones();
+  if (selected.length === 0) {
+    zones[0].selected = true;
+    return zones[0].id;
+  }
+  if (!selected.some((zone) => zone.id === els.baseZone.value)) {
+    return selected[0].id;
+  }
+  return els.baseZone.value;
 }
 
 function syncParticipantInputs() {
@@ -538,10 +662,10 @@ function syncParticipantInputs() {
 }
 
 function syncBaseZoneOptions() {
-  const selectedValue = els.baseZone.value || "Asia/Seoul";
+  const selectedValue = ensureSelectedBaseZone();
   els.baseZone.innerHTML = "";
 
-  for (const zone of zones) {
+  for (const zone of selectedZones()) {
     const option = document.createElement("option");
     option.value = zone.id;
     option.textContent = `${textFlagName(zone)} (${zone.region})`;
@@ -592,31 +716,75 @@ function applyLanguage(lang, shouldRender = true) {
 
 function buildParticipantControls() {
   els.participants.innerHTML = "";
+  const selected = selectedZones();
+  const available = zones.filter((zone) => !zone.selected);
 
-  for (const zone of zones) {
-    const label = document.createElement("label");
-    label.className = "participant-toggle";
-    label.dataset.participantLabel = zone.id;
-    label.style.setProperty("--zone-color", zone.accent);
-    label.innerHTML = `
-      <input data-participant-zone="${zone.id}" type="checkbox" ${zone.selected ? "checked" : ""} />
-      <span class="participant-mark" aria-hidden="true"></span>
+  const selectedList = document.createElement("div");
+  selectedList.className = "selected-participants";
+
+  for (const zone of selected) {
+    const chip = document.createElement("div");
+    chip.className = "participant-chip";
+    chip.dataset.participantLabel = zone.id;
+    chip.style.setProperty("--zone-color", zone.accent);
+    chip.innerHTML = `
       ${flagName(zone)}
+      <button type="button" aria-label="${zone.label} ${t("removeOffice")}" ${selected.length <= 1 ? "disabled" : ""}>×</button>
     `;
 
-    const input = label.querySelector("input");
-    input.addEventListener("change", () => {
-      zone.selected = input.checked;
-      if (selectedZones().length === 0) {
-        zone.selected = true;
-        input.checked = true;
+    const removeButton = chip.querySelector("button");
+    removeButton.addEventListener("click", () => {
+      if (selectedZones().length <= 1) return;
+      zone.selected = false;
+      if (els.baseZone.value === zone.id) {
+        els.baseZone.value = ensureSelectedBaseZone();
       }
-      syncParticipantInputs();
+      saveSelectedZones();
+      syncBaseZoneOptions();
+      buildParticipantControls();
       render();
     });
 
-    els.participants.append(label);
+    selectedList.append(chip);
   }
+
+  const addRow = document.createElement("div");
+  addRow.className = "participant-add-row";
+  addRow.innerHTML = `
+    <label>
+      <span>${t("officeToAdd")}</span>
+      <select ${available.length === 0 ? "disabled" : ""}></select>
+    </label>
+    <button class="text-button" type="button" ${available.length === 0 ? "disabled" : ""}>${t("addOffice")}</button>
+  `;
+
+  const addSelect = addRow.querySelector("select");
+  const addButton = addRow.querySelector("button");
+
+  if (available.length === 0) {
+    const option = document.createElement("option");
+    option.textContent = t("allOfficesAdded");
+    addSelect.append(option);
+  } else {
+    for (const zone of available) {
+      const option = document.createElement("option");
+      option.value = zone.id;
+      option.textContent = `${textFlagName(zone)} (${zone.region})`;
+      addSelect.append(option);
+    }
+  }
+
+  addButton.addEventListener("click", () => {
+    const zone = zones.find((candidate) => candidate.id === addSelect.value);
+    if (!zone) return;
+    zone.selected = true;
+    saveSelectedZones();
+    syncBaseZoneOptions();
+    buildParticipantControls();
+    render();
+  });
+
+  els.participants.append(selectedList, addRow);
 }
 
 function buildHolidayCalendars(data) {
@@ -1135,9 +1303,10 @@ function setNowInBaseZone() {
 async function init() {
   applyZoneLanguage();
   applyStaticText();
+  loadSelectedZones();
   syncBaseZoneOptions();
   syncDurationOptions();
-  els.baseZone.value = "Asia/Seoul";
+  els.baseZone.value = ensureSelectedBaseZone();
   await loadHolidays();
   loadWorkHours();
   buildTimePickerOptions();

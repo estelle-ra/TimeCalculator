@@ -350,9 +350,88 @@ h2 {
 
 .participants-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
+  gap: 10px;
   margin-top: 8px;
+}
+
+.selected-participants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.participant-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 8px 0 10px;
+  border: 1px solid #d1dbe6;
+  border-left: 4px solid var(--zone-color);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.participant-chip button {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.participant-chip button:hover,
+.participant-chip button:focus-visible {
+  border-color: rgba(180, 35, 24, 0.22);
+  background: var(--bad-soft);
+  color: var(--bad);
+  outline: none;
+}
+
+.participant-chip button:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.participant-add-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.participant-add-row label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.participant-add-row select {
+  min-height: 40px;
+  border: 1px solid #cbd5df;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  padding: 0 10px;
+  font: inherit;
+  outline: none;
+}
+
+.participant-add-row select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.14);
 }
 
 .participant-toggle {
@@ -903,6 +982,7 @@ input[type="range"] {
 
   .live-clocks,
   .participants-list,
+  .participant-add-row,
   .work-hour-row,
   .split-fields {
     grid-template-columns: 1fr;
