@@ -8,7 +8,8 @@ let currentLang = supportedLanguages.includes(localStorage.getItem(languageStora
 const messages = {
   ko: {
     appTitle: "협업 시차 계산기",
-    description: "서울, 뉴욕, LA 크루가 함께 회의 시간을 맞추는 협업 시차 계산기",
+    pageTitle: "협업 시차 계산기 | Global Meeting Time Planner",
+    description: "필요한 오피스를 선택해 지역별 근무 시간, 공휴일, 시차를 비교하고 글로벌 팀의 회의 가능 시간을 찾는 도구",
     eyebrow: "Collaboration Time Calculator",
     language: "언어",
     now: "NOW",
@@ -78,7 +79,8 @@ const messages = {
   },
   en: {
     appTitle: "Collaboration Time Calculator",
-    description: "A collaboration time calculator for coordinating meetings across Seoul, New York, LA, and Amsterdam.",
+    pageTitle: "Global Meeting Time Planner | Collaboration Time Calculator",
+    description: "Select offices, compare working hours, holidays, and time differences, and find meeting times for global teams.",
     eyebrow: "Collaboration Time Calculator",
     language: "Language",
     now: "NOW",
@@ -683,7 +685,7 @@ function syncDurationOptions() {
 
 function applyStaticText() {
   document.documentElement.lang = currentLang;
-  document.title = t("appTitle");
+  document.title = t("pageTitle");
   document.querySelector('meta[name="description"]')?.setAttribute("content", t("description"));
 
   for (const element of document.querySelectorAll("[data-i18n]")) {
